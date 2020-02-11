@@ -12,8 +12,8 @@ from bs4 import BeautifulSoup as bs
 
 class bot():
     def __init__(self):
-        self.user = 'savage_sperm'
-        self.password = 'avikp@33'
+        self.user = ''
+        self.password = ''
         self.url = 'https://www.instagram.com/'
         
         
