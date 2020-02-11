@@ -7,7 +7,8 @@ from fake_useragent import UserAgent
 from selenium.common.exceptions import * #Handle different exceptions for selenium 
 from selenium.webdriver.common.action_chains import ActionChains
 from lxml import etree, html
-import requests, bs4
+import requests
+from bs4 import BeautifulSoup as bs
 
 class bot():
     def __init__(self):
@@ -39,6 +40,7 @@ class bot():
         time.sleep(2)
         self.lis = []
         self.target_acc = None
+        self.follow_status = None
     def login(self):
 
         #go to login
@@ -95,112 +97,85 @@ class bot():
         for i in range(no_of_times):
             try:
                 self.driver.execute_script('var element = document.querySelector("body > div.RnEpo.Yx5HN > div > div.isgrP"); element.scrollTop = element.scrollHeight; ')
+            
+            except JavascriptException:
+                self.driver.execute_script('var element = document.querySelector("body > div.RnEpo.Yx5HN > div > div.Igw0E.IwRSH.eGOV_.vwCYk.i0EQd > div > div"); element.scrollTop = element.scrollHeight; ')
             except JavascriptException:
                  self.driver.execute_script("window.scrollBy(0, 550)")
             #self.driver.find_element_by_tag_name('li').send_keys(Keys.DOWN)
             time.sleep(2)
-    def unfollow(self):
-        #self.login()
-        print('out of profile')
-        time.sleep(2)
+    
+    def getLikers(self, users = ['daquan']):
+        for user in users:
+            self.driver.get(self.url + user)
+            
+            self.driver.execute_script("window.scrollBy(0, 550)")
+            self.driver.find_element_by_xpath('/html/body/div[1]/section/main/div/div[2]/article/div[1]/div/div[1]/div[1]').click() #photo clik
+            time.sleep(2)
+            self.driver.find_element_by_css_selector('body > div._2dDPU.vCf6V > div.zZYga > div > article > div.eo2As > section.EDfFK.ygqzn > div > div > button').click()
+            # self.driver.find_element_by_xpath('/html/body/div[4]/div[2]/div/article/div[2]/section[2]/div/div/button').click() #likes click
+            time.sleep(3)
+            for i in range(5):
+                users = self.driver.find_element_by_xpath('/html/body/div[5]/div/div[2]/div/div/div[{}]/div[2]/div[1]/div/a/div/div/div/text()'.format(i))
+                                                            
+                
+                self.names.append(users)
+                time.sleep(2)
+            
+            time.sleep(2)
+            print(self.names)
+    def getFollowers(self, users = 'purpleginee'):
+        self.driver.get(self.url+users)
         try:
-            uf_button = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/header/section/ul/li[3]/a')
+            followers_button = self.driver.find_element_by_xpath('/html/body/div[1]/section/main/div/header/section/ul/li[2]/a')
         except NoSuchElementException:
-            uf_button = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/header/section/ul/li[3]/a')
-        uf_button.click()
+            followers_button = self.driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/header/section/ul/li[3]/a')
+        followers_button.click()
         time.sleep(3)
 
-        # try:
-        #     box = self.driver.find_element_by_xpath('//div[@class="PZuss"]')
-        # # except NoSuchElementException:
-        # #     box = self.driver.find_element_by_xpath('/html/body/div[4]/div/div[2]/ul/div/li[1]')
-        # else: 
-        #     time.sleep(1)
-        # hover = ActionChains(self.driver).move_to_element(box)
-        # hover.perform()
-        
-        # box.click()
-        self.page = self.driver.page_source
-    # def usernames(self):
-        
-    #     dom = html.fromstring(self.page)
-    #     for i in range(1,6):
-    #         name = dom.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[1]/div[2]/div[1]/a/text()'.format(i))
-    #         name = self.toStr(name)
-    #         self.names.append(name)
-    #     print(self.names)
-    #     for name in self.names:
-    #         print(name)
-    #         response = self.driver.get(self.url + name)
-    #         # print(response.content)
-    #         self.page = self.driver.page_source
-    #         time.sleep(2)
-
-    #         dom = html.fromstring(self.page)
-    #         ullist = dom.xpath('/html/body/div[1]/section/main/div/header/section/ul/li[1]/span/span/text()')
-    #         time.sleep(2)
-    #         user_followers = dom.xpath('/html/body/div[1]/section/main/div/header/section/ul/li[2]/a/span/text()')
-    #         print(ullist)
-    #         time.sleep(2)
-    #         self.lis.append(self.toStr(user_followers))
-    #         # for lista in ullist:
-    #         #     info_post = lista.xpath('li[1]/span/span/')
-    #         #     print(info_post.text_content())
-    #         #     time.sleep(2)
-    #         # user_posts  = dom.xpath('/html/body/div[1]/section/main/div/header/section/ul/li[1]/span/span/text()')
-    #         # print(self.toStr(user_posts))
-    #         time.sleep(2)
-    #     print(self.lis)
-    #     # for i in range(1,11):
-    #     #     name = dom.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[1]/div[2]/div[1]/a/text()'.format(i))
-    #     #     name = self.toStr(name)
-    #     #     follow_status = dom.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[2]/button/text()'.format(i))
-    #     # #    re = requests.get(self.url+name, headers = self.header)
-    #     #     self.driver.get(self.url+name)
-    #     #     self.page  = self.driver.page_source
-    #     #     user_dom = html.fromstring(self.page) #response to string format
-    #     #     time.sleep(2)
-                    
-    #     #     user_posts  = user_dom.xpath('/html/body/div[1]/section/main/div/header/section/div[2]/h1/text()')
-    #     #     time.sleep(2)
-    #     #     title = user_dom.xpath('//title')[0]
-            
-    #     #     print(user_posts)
-    #     #     user_followers = user_dom.xpath('/html/body/div[1]/section/main/div/header/section/ul/li[2]/a/span/text()')
-    #     #     user_followings = user_dom.xpath('/html/body/div[1]/section/main/div/header/section/ul/li[3]/a/span/text()')
-    #     #     self.user_details['Username'] = name
-    #     #     self.user_details['Follow Status']= self.toStr(follow_status)
-    #     #     self.user_details['Followers'] = self.toStr(user_followers)
-    #     #     self.user_details['Followings'] = self.toStr(user_followings)
-    #     #     self.user_details['Posts'] = self.toStr(user_posts)
-    #     #     self.user_index[name] = self.user_details
-    #     #     print('Appended {}. {}'.format(i, name))
-    #     #     time.sleep(2)
-    #     # print(self.user_index)
-        
-    def follow_user(self):
-        self.target_acc = 'shitheadsteve'
-        self.driver.get(self.url+ self.target_acc )
         self.page = self.driver.page_source
         dom = html.fromstring(self.page)
-        #post containers 1 container contains 3 posts
-        for i in range(1,2):
-            post_container = dom.xpath('/html/body/div[1]/section/main/div/div[2]/article/div[1]/div/div[{}]'.format(i))
-            #for 3 posts
-            for j in range(1,4):
-                post = self.driver.find_element_by_xpath('/html/body/div[1]/section/main/div/div[2]/article/div[1]/div/div[{}]/div[1]/a/div/div[2]'.format(j)).click()
-                likes_button = self.driver.find_element_by_xpath('/html/body/div[4]/div[2]/div/article/div[2]/section[2]/div/div/button').click()
-                self.scroll(3)
-                for i in range(1,11):
-                    dom_page = self.driver.page_source
-                    domm = html.fromstring(dom_page)
-                    name = domm.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[1]/div[2]/div[1]/a/text()'.format(i))
-                    name = self.toStr(name)
-                    follow_status = domm.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[2]/button/text()'.format(i))
-                    self.user_details['Username'] = name
-                    self.user_details['Follow Status']= self.toStr(follow_status)
+        for i in range(1,6):
+        
+            # name = dom.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[1]/div[2]/div[1]/a/text()'.format(i))
+            name = dom.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[2]/div[1]/div/div/a/text()'.format(i))            
+            name = self.toStr(name)
+            self.names.append(name)
+        print(self.names)
+        self.getUserInfo(self.names)
+        print(self.lis)
+
+        # for i in range(1,11):
+        #     name = dom.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[1]/div[2]/div[1]/a/text()'.format(i))
+        #     name = self.toStr(name)
+        #     follow_status = dom.xpath('/html/body/div[4]/div/div[2]/ul/div/li[{}]/div/div[2]/button/text()'.format(i))
+        # #    re = requests.get(self.url+name, headers = self.header)
+        #     self.driver.get(self.url+name)
+        #     self.page  = self.driver.page_source
+        #     user_dom = html.fromstring(self.page) #response to string format
+        #     time.sleep(2)
                     
-        print(self.user_details)
+        #     user_posts  = user_dom.xpath('/html/body/div[1]/section/main/div/header/section/div[2]/h1/text()')
+        #     time.sleep(2)
+        #     title = user_dom.xpath('//title')[0]
+            
+        #     print(user_posts)
+        #     user_followers = user_dom.xpath('/html/body/div[1]/section/main/div/header/section/ul/li[2]/a/span/text()')
+        #     user_followings = user_dom.xpath('/html/body/div[1]/section/main/div/header/section/ul/li[3]/a/span/text()')
+        #     self.user_details['Username'] = name
+        #     self.user_details['Follow Status']= self.toStr(follow_status)
+        #     self.user_details['Followers'] = self.toStr(user_followers)
+        #     self.user_details['Followings'] = self.toStr(user_followings)
+        #     self.user_details['Posts'] = self.toStr(user_posts)
+        #     self.user_index[name] = self.user_details
+        #     print('Appended {}. {}'.format(i, name))
+        #     time.sleep(2)
+        # print(self.user_index)
+        
+    def follow_likers(self, users):
+        for user in users:
+            self.driver.get(self.url + user)
+                    
     def toStr(self, string):
         return ''.join(map(str, string))
     def like_post(self):
@@ -238,7 +213,26 @@ class bot():
 
         
         time.sleep(2)
-
-
-sample = bot()
-sample.like_post()
+    def getUserInfo(self,users):
+        for user in users:
+            self.driver.get(self.url + user)
+            page_source = self.driver.page_source
+            soup = bs(page_source, 'html.parser')
+            infos = soup.find_all(attrs={'class': 'g47SY'})
+            try:
+                self.follow_status = self.driver.find_element_by_xpath('/html/body/div[1]/section/main/div/header/section/div[1]/div[1]/span/span[1]/button')
+            except NoSuchElementException:
+                self.follow_status = self.driver.find_element_by_xpath('/html/body/div[1]/section/main/div/header/section/div[1]/button')
+            no_of_post = infos[0].text
+            no_of_followers = infos[1].text
+            no_of_following = infos[2].text
+            if self.follow_status.text == 'Follow':
+                self.follow_status.click()
+                print('Followed : ' + user+ ' ' +  no_of_followers )
+            else:
+                print(user + ' Already Folowed')
+            time.sleep(2)
+if __name__ == '__main__':
+    sample = bot()
+    sample.getFollowers()
+  
